@@ -56,7 +56,7 @@ class JenkinsJobChecker < Sensu::Plugin::Check::CLI
 
   def run
     if failed_jobs.any?
-      critical "Jobs reporting failure: #{failed_jobs_names}"
+      critical "Jobs reporting failure: #{failed_jobs_names} (#{failed_jobs_urls})"
     else
       ok 'All queried jobs reports success'
     end
@@ -95,5 +95,9 @@ class JenkinsJobChecker < Sensu::Plugin::Check::CLI
 
   def failed_jobs_names
     failed_jobs.keys.join(', ')
+  end
+
+  def failed_jobs_urls
+    failed_jobs.keys.each.map { |job| jenkins_api_client.job.get_builds(job)[0]['url'] }.join(' ')
   end
 end
